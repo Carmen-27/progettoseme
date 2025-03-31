@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benvenuto!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            color: #444;
+        }
+        p {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 30px;
+            color: #444;
+        }
+        .button {
+            background-color: #6a5acd; /* Colore viola per "Scopri il Menu" */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #5a4aac; /* Colore hover per "Scopri il Menu" */
+        }
+        .qr-code {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .antispam {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .antispam input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .antispam button {
+            background-color: #6a5acd; /* Colore viola per "Invia" */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .antispam button:hover {
+            background-color: #5a4aac; /* Colore hover per "Invia" */
+        }
+        .cookie-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .cookie-overlay button {
+            background-color: #6a5acd; /* Colore viola per "Accetta" */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .cookie-overlay button:hover {
+            background-color: #5a4aac; /* Colore hover per "Accetta" */
+        }
+    </style>
+</head>
+<body>
+    <h1>Benvenuto!</h1>
+    <p>Siamo felici di averti qui. Esplora e scopri tutto ciò che abbiamo da offrire. Speriamo che la tua esperienza sia piacevole.</p>
+    <button class="button" onclick="alert('Menu in arrivo!')">Scopri il Menu</button>
+    <div class="qr-code" id="qrCode"></div>
+    <div class="antispam">
+        <p>Rispondi alla domanda per continuare:</p>
+        <p id="mathQuestion"></p>
+        <input type="text" id="mathAnswer" placeholder="La tua risposta">
+        <button onclick="checkAnswer()">Invia</button>
+    </div>
+    <div class="cookie-overlay" id="cookieOverlay">
+        <p>Utilizziamo i cookie per migliorare la tua esperienza. Accetti i cookie?</p>
+        <button onclick="acceptCookies()">Accetta</button>
+    </div>
+
+    <script>
+        let qrCodeInstance = null;
+
+        // Genera il QR code con la risoluzione della finestra
+        function generateQRCode() {
+            const resolution = `${window.innerWidth}x${window.innerHeight}`;
+            const qrCodeElement = document.getElementById("qrCode");
+            if (qrCodeInstance) {
+                qrCodeInstance.clear(); // Cancella il QR code esistente
+            }
+            qrCodeInstance = new QRCode(qrCodeElement, {
+                text: resolution,
+                width: 150,
+                height: 150
+            });
+        }
+
+        // Aggiorna il QR code quando la finestra viene ridimensionata
+        window.addEventListener("resize", generateQRCode);
+
+        // Genera una domanda matematica casuale
+        function generateMathQuestion() {
+            const num1 = Math.floor(Math.random() * 10);
+            const num2 = Math.floor(Math.random() * 10);
+            const question = `Quanto fa ${num1} + ${num2}?`;
+            document.getElementById("mathQuestion").textContent = question;
+            return num1 + num2;
+        }
+
+        let correctAnswer = generateMathQuestion();
+
+        // Verifica la risposta dell'utente
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById("mathAnswer").value);
+            if (userAnswer === correctAnswer) {
+                alert("Risposta corretta!");
+            } else {
+                alert("Risposta errata. Riprova.");
+                correctAnswer = generateMathQuestion();
+            }
+        }
+
+        // Gestione dei cookie
+        function acceptCookies() {
+            document.getElementById("cookieOverlay").style.display = "none";
+            localStorage.setItem("cookiesAccepted", "true");
+        }
+
+        // Mostra l'overlay dei cookie solo se non è stato accettato
+        if (localStorage.getItem("cookiesAccepted") !== "true") {
+            document.getElementById("cookieOverlay").style.display = "flex";
+        }
+
+        // Inizializzazione
+        generateQRCode();
+    </script>
+</body>
+</html>
